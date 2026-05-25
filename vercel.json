@@ -1,6 +1,5 @@
 {
   "name": "SunRipe Fruit Boutique",
-  "description": "A premium, direct-from-farm organic fruit boutique and custom gift box storefront, featuring interactive product catalogs, real-time nutrition specs, smart shopping cart, and a transparent Product Requirements Document (PRD) viewer.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
