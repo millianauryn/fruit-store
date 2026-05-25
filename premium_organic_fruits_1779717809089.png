@@ -1,0 +1,257 @@
+import { Fruit } from '../types';
+import { X, Globe, Sprout, Star, Heart, Droplet, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+interface NutritionModalProps {
+  fruit: Fruit | null;
+  onClose: () => void;
+}
+
+export default function NutritionModal({ fruit, onClose }: NutritionModalProps) {
+  if (!fruit) return null;
+
+  // Taste level helpers
+  const renderTasteDots = (value: number, activeColor: string) => {
+    return (
+      <div className="flex gap-1.5 items-center">
+        {[1, 2, 3, 4, 5].map((idx) => (
+          <div
+            key={idx}
+            className={`h-2 w-7 rounded-sm transition-all duration-300 ${
+              idx <= value ? activeColor : 'bg-stone-100 dark:bg-stone-800'
+            }`}
+          />
+        ))}
+        <span className="text-xs font-mono ml-2 text-stone-600 dark:text-stone-400">{value}/5</span>
+      </div>
+    );
+  };
+
+  // Dynamically map tailwind color codes for visual accents
+  const getAccentColors = (code: string) => {
+    switch (code) {
+      case 'amber':
+        return { bg: 'bg-amber-50', text: 'text-amber-800', border: 'border-amber-200', fill: 'bg-amber-500', glow: 'shadow-amber-100' };
+      case 'rose':
+        return { bg: 'bg-rose-50', text: 'text-rose-800', border: 'border-rose-200', fill: 'bg-rose-500', glow: 'shadow-rose-100' };
+      case 'orange':
+        return { bg: 'bg-orange-50', text: 'text-orange-800', border: 'border-orange-200', fill: 'bg-orange-500', glow: 'shadow-orange-100' };
+      case 'blue':
+        return { bg: 'bg-blue-50', text: 'text-blue-800', border: 'border-blue-200', fill: 'bg-blue-500', glow: 'shadow-blue-100' };
+      case 'red':
+        return { bg: 'bg-red-50', text: 'text-red-800', border: 'border-red-200', fill: 'bg-red-500', glow: 'shadow-red-100' };
+      case 'yellow':
+        return { bg: 'bg-yellow-50', text: 'text-yellow-800', border: 'border-yellow-200', fill: 'bg-yellow-500', glow: 'shadow-yellow-100' };
+      case 'emerald':
+        return { bg: 'bg-emerald-50', text: 'text-emerald-800', border: 'border-emerald-200', fill: 'bg-emerald-500', glow: 'shadow-emerald-100' };
+      case 'lime':
+        return { bg: 'bg-lime-50', text: 'text-lime-800', border: 'border-lime-200', fill: 'bg-lime-500', glow: 'shadow-lime-100' };
+      default:
+        return { bg: 'bg-stone-50', text: 'text-stone-800', border: 'border-stone-200', fill: 'bg-stone-500', glow: 'shadow-stone-100' };
+    }
+  };
+
+  const colors = getAccentColors(fruit.colorCode);
+
+  return (
+    <AnimatePresence>
+      <div 
+        id="nutrition-modal-overlay"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          transition={{ type: 'spring', duration: 0.4 }}
+          id="nutrition-modal-card"
+          className="relative w-full max-w-2xl overflow-hidden bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-3xl shadow-xl max-h-[90vh] flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Decorative subtle ambient backdrop reflection */}
+          <div className={`absolute -right-16 -top-16 w-48 h-48 rounded-full blur-3xl opacity-20 ${colors.fill}`} />
+          
+          {/* Close button */}
+          <button
+            id="close-modal-btn"
+            onClick={onClose}
+            className="absolute top-5 right-5 p-2 transition-colors rounded-full text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800"
+            aria-label="Close details"
+          >
+            <X size={16} />
+          </button>
+
+          {/* Scrolling Content area */}
+          <div className="overflow-y-auto p-6 md:p-8 flex-1">
+            
+            {/* Header section with fruit name & icon */}
+            <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center mb-6">
+              <span className="text-5xl sm:text-6xl select-none" role="img" aria-label={fruit.name}>
+                {fruit.image}
+              </span>
+              <div>
+                <div className="flex flex-wrap gap-2 items-center">
+                  <h3 className="text-2xl font-serif font-semibold text-stone-900 dark:text-white leading-tight">
+                    {fruit.name}
+                  </h3>
+                  {fruit.isBestSeller && (
+                    <span className="px-2.5 py-0.5 text-[10px] font-mono tracking-wider uppercase text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 rounded-full border border-emerald-200 dark:border-emerald-800">
+                      Orchard Reserve
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm font-mono italic text-stone-500 dark:text-stone-400 mt-1">
+                  {fruit.scientificName}
+                </p>
+                <div className="flex gap-3 items-center mt-2 text-xs text-stone-500 dark:text-stone-400">
+                  <span className="flex items-center gap-1">
+                    <Globe size={13} className="text-emerald-600 dark:text-emerald-400" />
+                    {fruit.origin}
+                  </span>
+                  <span className="h-3 w-px bg-stone-200 dark:bg-stone-800" />
+                  <span className="flex items-center gap-0.5 text-amber-500">
+                    <Star size={13} className="fill-current" />
+                    <span className="font-medium text-stone-700 dark:text-stone-300">{fruit.rating}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Description Paragraph */}
+            <p className="text-sm leading-relaxed text-stone-600 dark:text-stone-300 mb-6 bg-stone-50 dark:bg-stone-950 p-4 rounded-xl border border-stone-100 dark:border-stone-850 font-sans">
+              {fruit.description}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column: Taste Profile & Bio-activeness */}
+              <div className="space-y-6">
+                <div>
+                  <h4 className="flex items-center gap-1.5 text-xs font-mono tracking-widest uppercase text-stone-500 dark:text-stone-400 mb-3.5">
+                    <Heart size={14} className="text-rose-500" />
+                    SENSORY PROFILE
+                  </h4>
+                  <div className="space-y-3 bg-stone-50/50 dark:bg-stone-950/20 p-4 rounded-2xl border border-stone-100 dark:border-stone-850">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-stone-700 dark:text-stone-300">Sweetness</span>
+                      {renderTasteDots(fruit.tasteProfile.sweet, 'bg-amber-400')}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-stone-700 dark:text-stone-300">Tanginess</span>
+                      {renderTasteDots(fruit.tasteProfile.tangy, 'bg-rose-400')}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium text-stone-700 dark:text-stone-300">Aroma & Fragrance</span>
+                      {renderTasteDots(fruit.tasteProfile.fragrant, 'bg-violet-400')}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-stone-500 dark:text-stone-400 mb-3">
+                    <Sparkles size={14} className="text-emerald-500" />
+                    CLINICAL BIO-BENEFITS
+                  </h4>
+                  <ul className="space-y-2.5">
+                    {fruit.nutrition.benefits.map((benefit, idx) => (
+                      <li key={idx} className="flex gap-2.5 items-start text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                        <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-mono text-[9px] font-bold mt-0.5">
+                          ✓
+                        </span>
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Right Column: Nutrition Metrics Card */}
+              <div className="bg-stone-50/70 dark:bg-stone-950/20 p-5 rounded-2xl border border-stone-100 dark:border-stone-850 space-y-4">
+                <div className="flex justify-between items-center pb-2 border-b border-stone-200 dark:border-stone-800">
+                  <h4 className="flex items-center gap-1.5 text-xs font-mono tracking-widest uppercase text-stone-500 dark:text-stone-400">
+                    <Sprout size={14} className="text-emerald-600 dark:text-emerald-400" />
+                    NUTRIENT SPECS
+                  </h4>
+                  <span className="text-[10px] font-mono bg-white dark:bg-stone-900 px-2 py-0.5 rounded-full text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-800">
+                    Per 100g serving
+                  </span>
+                </div>
+
+                {/* Micro metrics grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-white dark:bg-stone-900 p-3 rounded-xl border border-stone-100/80 dark:border-stone-800">
+                    <span className="block text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase">CALORIC VALUE</span>
+                    <span className="text-lg font-serif font-semibold text-stone-900 dark:text-white">{fruit.nutrition.calories} kcal</span>
+                  </div>
+                  <div className="bg-white dark:bg-stone-900 p-3 rounded-xl border border-stone-100/80 dark:border-stone-800">
+                    <span className="block text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase">WATER VOLUME</span>
+                    <span className="text-lg font-serif font-semibold text-stone-900 dark:text-white flex items-center gap-1">
+                      <Droplet size={14} className="text-blue-500" />
+                      {fruit.nutrition.waterContent}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Progress bars for key micronutrients */}
+                <div className="space-y-3.5 pt-2">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-stone-500 dark:text-stone-400 font-mono">FRUCTOSE SUGARS</span>
+                      <span className="text-stone-700 dark:text-stone-300 font-medium font-mono">{fruit.nutrition.sugar}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-400 rounded-full" style={{ width: '45%' }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-stone-500 dark:text-stone-400 font-mono">DIETARY FIBER</span>
+                      <span className="text-stone-700 dark:text-stone-300 font-medium font-mono">{fruit.nutrition.fiber}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-400 rounded-full" style={{ width: '60%' }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-stone-500 dark:text-stone-400 font-mono">VITAMIN C (POTENCY)</span>
+                      <span className="text-stone-700 dark:text-stone-300 font-medium font-mono">{fruit.nutrition.vitaminC.split(' ')[0]}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-rose-400 rounded-full" style={{ width: '82%' }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-stone-500 dark:text-stone-400 font-mono">POTASSIUM (ION)</span>
+                      <span className="text-stone-700 dark:text-stone-300 font-medium font-mono">{fruit.nutrition.potassium}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Footer of modal */}
+          <div className="bg-stone-50 dark:bg-stone-950 p-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+            <div className="text-left pl-2">
+              <span className="text-2xl font-serif font-bold text-emerald-800 dark:text-emerald-400">${fruit.price.toFixed(2)}</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400 font-mono ml-1">{fruit.unit}</span>
+            </div>
+            <button
+              id="confirm-modal-ok"
+              onClick={onClose}
+              className="px-6 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-sans text-xs font-semibold rounded-xl leading-none transition-colors duration-200"
+            >
+              Close Spec Sheet
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+}
